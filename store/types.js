@@ -1,0 +1,4 @@
+// Get albums
+export const GET_ALBUMS_REQ = "GET_ALBUMS_REQ";
+export const GET_ALBUMS_SUCCESS = "GET_ALBUMS_SUCCESS";
+export const GET_ALBUMS_FAILURE = "GET_ALBUMS_FAILURE";
