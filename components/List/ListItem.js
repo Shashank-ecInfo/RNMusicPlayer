@@ -1,15 +1,69 @@
+import axios from "axios";
 import moment from "moment";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Image, StyleSheet, Text, View } from "react-native";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { COLORS, FONTS, icons, SIZES } from "../../constants";
+import { API_KEY } from "../../utils/https";
 
 const ListItem = ({ item, navigation }) => {
+  const [loading, setLoading] = useState(false);
+
+  const initTrackData = () => {
+    setLoading(true);
+
+    const getTracks = axios.get(`${item.links.tracks.href}?apikey=${API_KEY}`);
+    const getImages = axios.get(`${item.links.images.href}?apikey=${API_KEY}`);
+
+    let temp_tracks = [];
+    let temp_image = {};
+
+    axios
+      .all([getTracks, getImages])
+      .then(
+        axios.spread((...responseJson) => {
+          if (responseJson[0].status === 200) {
+            setLoading(false);
+            temp_tracks = responseJson[0].data.tracks.map((t) => ({
+              url: t.previewURL,
+              title: t.name,
+              artist: t.artistName,
+              album: t.albumName,
+              genre: "Rock",
+              artwork: "https://www.bensound.com/bensound-img/punky.jpg",
+              duration: t.playbackSeconds,
+            }));
+          } else {
+            setLoading(false);
+            console.log("Something wrong");
+          }
+          if (responseJson[1].status === 200) {
+            setLoading(false);
+            temp_image = responseJson[1].data.images.filter(
+              (i) => i.height === 500
+            )[0];
+          } else {
+            setLoading(false);
+            console.log("Something wrong");
+          }
+          navigation.navigate("Album", {
+            tracks: temp_tracks,
+            image: temp_image.url,
+            album: item,
+          });
+        })
+      )
+      .catch((error) => console.error(error))
+      .done(() => {
+        setLoading(false);
+      });
+  };
+
   return (
     <TouchableOpacity
       style={styles.albumCard}
       activeOpacity={0.8}
-      onPress={() => navigation.navigate("Album", { album: item })}
+      onPress={initTrackData}
     >
       <View style={styles.avatar}>
         <Image source={icons.Music} style={{ width: 35, height: 35 }} />

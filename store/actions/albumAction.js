@@ -6,16 +6,15 @@ import {
   GET_ALBUMS_SUCCESS,
   GET_ALBUMS_FAILURE,
 } from "../types";
-import { Alert, Platform, ToastAndroid } from "react-native";
 
-export const getAlbums = () => async (dispatch) => {
+export const getAlbums = (offset) => async (dispatch) => {
+  console.log(offset);
   dispatch({ type: GET_ALBUMS_REQ });
   try {
     const res = await axios({
       method: "GET",
-      url: `${API_HOST}albums/top?apikey=${API_KEY}`,
+      url: `${API_HOST}albums/top?apikey=${API_KEY}&limit=20&offset=${offset}`,
     });
-    console.log(res.data);
     if (res.status === 200) {
       dispatch({
         type: GET_ALBUMS_SUCCESS,

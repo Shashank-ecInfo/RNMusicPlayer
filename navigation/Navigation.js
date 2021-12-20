@@ -1,37 +1,31 @@
 import React from "react";
-import { View, Text } from "react-native";
-import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { createStackNavigator } from "@react-navigation/stack";
 import Feather from "react-native-vector-icons/Feather";
-import { COLORS, FONTS } from "../constants";
-import { useSelector } from "react-redux";
+import { COLORS } from "../constants";
 import Album from "../screens/Album";
-import MusicPlayer from "../screens/MusicPlayer";
 import Home from "../screens/Home";
 
 const Stack = createStackNavigator();
 
-const headerOptions = ({ navigation, title }) => {
+const headerOptions = ({ navigation }) => {
   return {
     headerShown: true,
     headerStyle: {
-      borderBottomColor: "#CCCCCC",
-      borderBottomWidth: 0.2,
-      backgroundColor: "#ffffff",
+      backgroundColor: COLORS.primary,
       elevation: 0,
       shadowOpacity: 0,
     },
     headerTitleAlign: "center",
-    title: title ? title : "",
+    title: "",
     headerLeft: () => (
       <Feather
         name="chevron-left"
-        size={26}
+        size={30}
         onPress={() => {
           navigation.goBack();
         }}
         style={{ marginLeft: 10, width: 50 }}
-        color="#000000"
+        color={COLORS.white}
       />
     ),
   };
@@ -44,16 +38,7 @@ const AppStack = () => {
       <Stack.Screen
         name="Album"
         component={Album}
-        // options={({ navigation }) =>
-        //   headerOptions({ navigation, title: "Album" })
-        // }
-      />
-      <Stack.Screen
-        name="MusicPlayer"
-        component={MusicPlayer}
-        // options={({ navigation }) =>
-        //   headerOptions({ navigation, title: "Music Player" })
-        // }
+        options={({ navigation }) => headerOptions({ navigation })}
       />
     </Stack.Navigator>
   );

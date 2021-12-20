@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { SafeAreaView, StyleSheet, Text, View } from "react-native";
 import { TextInput } from "react-native-gesture-handler";
 import styled from "styled-components/native";
@@ -8,23 +8,37 @@ import { useDispatch, useSelector } from "react-redux";
 import { getAlbums } from "../store/actions/albumAction";
 import List from "../components/List";
 import { Spinner } from "native-base";
-// import { useFocusEffect } from "@react-navigation/native";
 
 const Home = (props) => {
   const dispatch = useDispatch();
-
-  //   useFocusEffect(
-  //     React.useCallback(() => {
-  //       dispatch(getAlbums());
-  //     }, [dispatch, getAlbums])
-  //   );
+  const [searchText, setSearchText] = useState("");
+  const [filteredAlbums, setFilteredAlbums] = useState([]);
+  const [offset, setOffset] = useState(0);
 
   useEffect(() => {
-    dispatch(getAlbums());
-  }, []);
+    dispatch(getAlbums(offset));
+    return () => {};
+  }, [offset]);
 
   const albums = useSelector((state) => state.albumState.albums);
   const isLoading = useSelector((state) => state.albumState.isLoading);
+
+  useEffect(() => {
+    setFilteredAlbums(albums);
+  }, [albums]);
+
+  const handleSearch = (searchText) => {
+    setSearchText(searchText);
+    setFilteredAlbums(
+      albums.filter((album) =>
+        album.name.toLowerCase().includes(searchText.toLowerCase())
+      )
+    );
+  };
+
+  const handleLoadMore = () => {
+    setOffset(offset + 20);
+  };
 
   return (
     <>
@@ -50,15 +64,20 @@ const Home = (props) => {
               returnKeyType="search"
               placeholder="Search for Album"
               placeholderTextColor={COLORS.gray}
-              //   value={searchText}
-              //   onChangeText={(text) => handleSearch(text)}
+              value={searchText}
+              onChangeText={(text) => handleSearch(text)}
             />
           </View>
           <View>
             <View>
               <Text style={styles.subHeader}>Top Albums</Text>
             </View>
-            <List data={albums} navigation={props.navigation} />
+            <List
+              data={filteredAlbums}
+              navigation={props.navigation}
+              isLoading={isLoading}
+              handleLoadMore={handleLoadMore}
+            />
           </View>
         </SafeAreaView>
       )}

@@ -17,7 +17,7 @@ const persistConfig = {
   // Whitelist (Save Specific Reducers)
   // whitelist: ["name of reducer"],
   // Blacklist (Don't Save Specific Reducers)
-  //   blacklist: ["name of reducer"],
+  blacklist: ["albumReducer"],
 };
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);
